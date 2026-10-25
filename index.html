@@ -422,7 +422,7 @@ $('ask').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preven
 document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{show('ask');ask(b.dataset.q)});
 
 render();
-(async()=>{db=await claude.use('db');if(!db){$('syncText').textContent='claude.ai에 로그인한 상태로 열어야 장부가 보여요.';return}
+(async()=>{db=await claude.use('db');if(!db){showLock();return}
   db.collection('holdings').onSnapshot(s=>{S.holdings=s.docs.map(d=>({_id:d.id,...d.data()}));render()});
   db.collection('research').onSnapshot(s=>{S.research={};s.docs.forEach(d=>{const x=d.data();S.research[x.code||d.id]=x});render()});
   db.collection('trades').onSnapshot(s=>{S.trades=s.docs.map(d=>d.data());render()});
@@ -437,5 +437,41 @@ render();
 (async()=>{sample=await claude.use('sample')})();
 </script>
 
+<style>
+.lock{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(10px);padding:max(16px,env(safe-area-inset-left,0px))}
+.lock form{background:var(--card);color:var(--card-ink);border-radius:18px;padding:22px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px;box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+.lock h2{margin:0;font-size:1.2rem}
+.lock .err{color:var(--bad);font-size:.85rem;min-height:1.2em;margin:0}
+</style>
+<div class="lock" id="lock" hidden>
+  <form id="lockForm">
+    <h2>가치투자 장부</h2>
+    <p class="hint">보유 종목과 매매 기록은 암호화되어 있어요. 비밀번호를 입력하세요.</p>
+    <label for="pw">비밀번호<input id="pw" type="password" autocomplete="current-password" required></label>
+    <button class="btn" type="submit" id="pwBtn">열기</button>
+    <p class="err" id="pwErr"></p>
+  </form>
+</div>
+<script>
+function showLock(){$('lock').hidden=false;$('syncText').textContent='잠겨 있어요';setTimeout(()=>$('pw').focus(),50)}
+const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+$('lockForm').onsubmit=async e=>{e.preventDefault();$('pwErr').textContent='';$('pwBtn').disabled=true;$('pwBtn').textContent='여는 중…';
+  try{
+    const enc=await (await fetch('data.enc.json',{cache:'no-store'})).json();
+    const base=await crypto.subtle.importKey('raw',new TextEncoder().encode($('pw').value),'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(enc.salt),iterations:enc.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+    const B=JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(enc.iv)},key,b64(enc.ct))));
+    S.holdings=Object.entries(B.holdings||{}).map(([id,d])=>({_id:id,...d}));
+    S.research={};Object.entries(B.research||{}).forEach(([id,d])=>S.research[d.code||id]=d);
+    S.trades=Object.values(B.trades||{});
+    S.report=B.reports?.latest||null;S.sync=B.sync?.domino||null;
+    S.criteria={...DEF,...(B.settings?.criteria||{})};S.algo=B.settings?.algorithm||null;
+    S.habits=B.analysis?.habits||null;
+    S.evidence={};Object.entries(B.evidence||{}).forEach(([id,d])=>S.evidence[id]={id,...d});
+    S.backtest={...(B.backtest||{})};
+    render();$('lock').hidden=true;$('pw').value='';
+  }catch(err){$('pwErr').textContent=err&&err.name==='OperationError'?'비밀번호가 맞지 않아요.':'데이터를 불러오지 못했어요. 페이지를 새로고침해 주세요.'}
+  $('pwBtn').disabled=false;$('pwBtn').textContent='열기'};
+</script>
 </body>
 </html>
