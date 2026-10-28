@@ -459,6 +459,29 @@ footer{color:var(--muted);font-size:.78rem;max-width:62ch}
 
 .detail .panel{padding:18px}
 @media (min-width:1100px){.detail .panel{padding:22px 26px}.detail .rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:32px}.detail .rows>.row:nth-child(2){border-top:0}.detail .rows>.empty{grid-column:1/-1}.traits,.evs{grid-template-columns:repeat(3,minmax(0,1fr))}.viz{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ===== Glassy 레이어 ===== */
+:root{--glass:rgba(255,255,255,.64);--glass-2:rgba(255,255,255,.34);--glass-line:rgba(255,255,255,.75);--glass-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 18px 40px -22px rgba(20,48,32,.45);
+  --sky:linear-gradient(180deg,#F4E6CF 0%,#E7EEDB 38%,#CFE3D3 62%,#9DC3A9 100%);--sun:radial-gradient(60% 45% at 72% 30%,rgba(255,214,160,.55),transparent 70%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--glass:rgba(16,26,20,.46);--glass-2:rgba(255,255,255,.06);--glass-line:rgba(255,255,255,.12);--glass-shadow:0 1px 0 rgba(255,255,255,.07) inset,0 20px 44px -22px rgba(0,0,0,.7);
+  --sky:linear-gradient(180deg,#0B1410 0%,#13231A 45%,#1C3A2A 75%,#0E1B14 100%);--sun:radial-gradient(55% 40% at 72% 30%,rgba(94,180,130,.28),transparent 70%)}}
+:root[data-theme="dark"]{--glass:rgba(16,26,20,.46);--glass-2:rgba(255,255,255,.06);--glass-line:rgba(255,255,255,.12);--glass-shadow:0 1px 0 rgba(255,255,255,.07) inset,0 20px 44px -22px rgba(0,0,0,.7);
+  --sky:linear-gradient(180deg,#0B1410 0%,#13231A 45%,#1C3A2A 75%,#0E1B14 100%);--sun:radial-gradient(55% 40% at 72% 30%,rgba(94,180,130,.28),transparent 70%)}
+html,body{background:#13231A}
+.app{position:relative;z-index:1}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNjAwIDkwMCcgcHJlc2VydmVBc3BlY3RSYXRpbz0neE1pZFlNYXggc2xpY2UnPiA8cGF0aCBkPSdNMCA1NjAgQzE2MCA1MDAgMjYwIDUyMCAzODAgNDcwIFM2MDAgNDMwIDcyMCA0ODAgOTAwIDQyMCAxMDQwIDQ1MCAxMzAwIDQwMCAxNjAwIDQ2MCBWOTAwIEgwWicgZmlsbD0ncmdiKDcwLDExMCw4OCknIG9wYWNpdHk9Jy4zNScvPiA8cGF0aCBkPSdNMCA2MzAgQzIwMCA1NzAgMzMwIDYxMCA0NzAgNTYwIFM3MjAgNTYwIDg2MCA1OTAgMTEyMCA1MzAgMTI2MCA1NzAgMTQ4MCA1NDAgMTYwMCA1ODAgVjkwMCBIMFonIGZpbGw9J3JnYig0Niw5MCw2NiknIG9wYWNpdHk9Jy41Jy8+IDxwYXRoIGQ9J00wIDcyMCBDMjQwIDY2MCAzODAgNzAwIDU2MCA2NzAgUzg2MCA2OTAgMTAwMCA2NjAgMTMwMCA2OTAgMTYwMCA2NTAgVjkwMCBIMFonIGZpbGw9J3JnYigyOCw2NCw0NiknIG9wYWNpdHk9Jy43Jy8+IDxwYXRoIGQ9J00wIDgwMCBDMzAwIDc3MCA1MjAgNzkwIDgwMCA3NzAgUzEzMDAgNzkwIDE2MDAgNzYwIFY5MDAgSDBaJyBmaWxsPSdyZ2IoMTYsNDAsMjgpJyBvcGFjaXR5PScuODUnLz4gPC9zdmc+") bottom center/cover no-repeat,var(--sun),var(--sky)}
+.c,.detail,.search,.icbtn,.rail{background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)}
+.rail{border-radius:28px}
+.c{border-radius:24px;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+.c::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(140deg,rgba(255,255,255,.28),transparent 42%)}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){.c:hover{transform:translateY(-5px);box-shadow:var(--glass-shadow),0 26px 50px -24px rgba(20,48,32,.55)}}
+.kpi2 .ic{background:var(--glass-2);border:1px solid var(--glass-line)}
+.kpi2.accent{background:linear-gradient(140deg,rgba(94,139,106,.88),rgba(62,106,76,.92));border-color:rgba(255,255,255,.35)}
+.pill{display:inline-flex;align-items:center;gap:3px;background:rgba(24,146,90,.14);color:var(--good)}
+.pill.bad{background:rgba(217,72,59,.14);color:var(--bad)}
+.pill svg{width:12px;height:12px}
+@media (max-width:760px){.rail{border-radius:22px 22px 0 0;border-bottom:0}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.c,.detail,.search,.icbtn,.rail{background:var(--surface)}}
 </style>
 
 <script>
@@ -682,7 +705,7 @@ render();
 /* ===== 홈(벤토) ===== */
 function renderHome(val,cost,alerts,score){
   const plp=cost?(val/cost-1)*100:null;
-  $('kPLpct').textContent=plp==null?'–':pct(plp);$('kPLpct').className='pill'+(plp<0?' bad':'');
+  $('kPLpct').innerHTML=plp==null?'–':(plp<0?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10M17 7v10H7"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>')+pct(plp);$('kPLpct').className='pill'+(plp<0?' bad':'');
   const hv=S.holdings.map(h=>{const r=resOf(h);return h.qty*(r.price||h.price||h.avg)}).sort((a,b)=>b-a).slice(0,7);
   const mx=Math.max(...hv,1);
   $('sparkBars').innerHTML=hv.map((v,i)=>{const hh=Math.max(3,34*v/mx);return`<rect x="${i*12+2}" y="${38-hh}" width="7" height="${hh}" rx="2" fill="var(--accent)" opacity="${(1-i*.1).toFixed(2)}"/>`}).join('');
